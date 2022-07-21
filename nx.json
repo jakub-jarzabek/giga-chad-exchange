@@ -1,31 +1,46 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "giga-chad-exchange",
-  "affected": {
-    "defaultBase": "main"
-  },
-  "implicitDependencies": {
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
+    "$schema": "./node_modules/nx/schemas/nx-schema.json",
+    "npmScope": "giga-chad-exchange",
+    "affected": {
+        "defaultBase": "main"
     },
-    ".eslintrc.json": "*"
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "nx/tasks-runners/default",
-      "options": {
-        "cacheableOperations": ["build", "lint", "test", "e2e"]
-      }
-    }
-  },
-  "targetDefaults": {
-    "build": {
-      "dependsOn": ["^build"]
-    }
-  },
-  "workspaceLayout": {
-    "appsDir": "packages",
-    "libsDir": "packages"
-  }
+    "implicitDependencies": {
+        "package.json": {
+            "dependencies": "*",
+            "devDependencies": "*"
+        },
+        ".eslintrc.json": "*"
+    },
+    "tasksRunnerOptions": {
+        "default": {
+            "runner": "@nrwl/nx-cloud",
+            "options": {
+                "cacheableOperations": ["build", "lint", "test", "e2e"],
+                "accessToken": "MDg4ZmU4ODctZmI5Yi00NjRhLTg4ZjAtMGQ1ZTBmNWU0NGM1fHJlYWQtd3JpdGU="
+            }
+        }
+    },
+    "targetDefaults": {
+        "build": {
+            "dependsOn": ["^build"]
+        }
+    },
+    "workspaceLayout": {
+        "appsDir": "packages",
+        "libsDir": "packages"
+    },
+    "generators": {
+        "@nrwl/react": {
+            "application": {
+                "babel": true
+            }
+        },
+        "@nrwl/next": {
+            "application": {
+                "style": "css",
+                "linter": "eslint"
+            }
+        }
+    },
+    "defaultProject": "frontend"
 }
