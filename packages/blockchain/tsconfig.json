@@ -1,11 +1,12 @@
 {
     "extends": "../../tsconfig.settings.json",
     "compilerOptions": {
-        "outDir": "./out-tsc",
-        "rootDir": "./src",
-        "types": ["node", "jest"],
-        "allowSyntheticDefaultImports": true
+        "target": "es2020",
+        "module": "commonjs",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "skipLibCheck": true
     },
-    "include": ["src/**/*.ts", "src/**/*.tsx"],
-    "references": [{ "path": "../constants" }]
+    "include": ["**/*.ts", "**/*.tsx"]
 }
