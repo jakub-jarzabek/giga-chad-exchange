@@ -10,3 +10,9 @@ export const GCC_TOKEN: IToken = {
     DECIMALS: 18,
     TOTAL_SUPPLY: 420,
 }
+export const GWC_TOKEN: IToken = {
+    NAME: "Giga Weeb Coin",
+    SYMBOL: "GWC",
+    DECIMALS: 18,
+    TOTAL_SUPPLY: 1000,
+}
