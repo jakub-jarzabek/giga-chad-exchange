@@ -4,6 +4,8 @@
 /dist
 /tmp
 /out-tsc
+**/artifacts/
+**/cache/
 
 # dependencies
 node_modules

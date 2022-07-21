@@ -1,0 +1,17 @@
+{
+    "files": [],
+    "compilerOptions": {
+        "disableSourceOfProjectReferenceRedirect": true
+    },
+    "references": [
+        {
+            "path": "./packages/constants"
+        },
+        {
+            "path": "./packages/blockchain"
+        },
+        {
+            "path": "./packages/frontend"
+        }
+    ]
+}
