@@ -34,7 +34,9 @@ export interface ExchangeInterface extends utils.Interface {
     "deposit(address,uint256)": FunctionFragment;
     "exchangeAccount()": FunctionFragment;
     "fee()": FunctionFragment;
+    "fillOrder(uint256)": FunctionFragment;
     "idToCancelledStatus(uint256)": FunctionFragment;
+    "idToCompletedStatus(uint256)": FunctionFragment;
     "orderCount()": FunctionFragment;
     "placeOrder(address,uint256,address,uint256)": FunctionFragment;
     "withdraw(address,uint256)": FunctionFragment;
@@ -47,7 +49,9 @@ export interface ExchangeInterface extends utils.Interface {
       | "deposit"
       | "exchangeAccount"
       | "fee"
+      | "fillOrder"
       | "idToCancelledStatus"
+      | "idToCompletedStatus"
       | "orderCount"
       | "placeOrder"
       | "withdraw"
@@ -71,7 +75,15 @@ export interface ExchangeInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "fee", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "fillOrder",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
     functionFragment: "idToCancelledStatus",
+    values: [PromiseOrValue<BigNumberish>]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "idToCompletedStatus",
     values: [PromiseOrValue<BigNumberish>]
   ): string;
   encodeFunctionData(
@@ -103,8 +115,13 @@ export interface ExchangeInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "fee", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "fillOrder", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "idToCancelledStatus",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "idToCompletedStatus",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "orderCount", data: BytesLike): Result;
@@ -115,12 +132,14 @@ export interface ExchangeInterface extends utils.Interface {
     "Cancel(uint256,address,address,address,uint256,uint256,uint256)": EventFragment;
     "Deposit(address,address,uint256,uint256)": EventFragment;
     "NewOrder(uint256,address,address,address,uint256,uint256,uint256)": EventFragment;
+    "NewTrade(uint256,address,address,uint256,address,uint256,address,uint256)": EventFragment;
     "Withdraw(address,address,uint256,uint256)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "Cancel"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Deposit"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "NewOrder"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "NewTrade"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
 
@@ -168,6 +187,23 @@ export type NewOrderEvent = TypedEvent<
 >;
 
 export type NewOrderEventFilter = TypedEventFilter<NewOrderEvent>;
+
+export interface NewTradeEventObject {
+  _id: BigNumber;
+  _initiator: string;
+  _tokenReceive: string;
+  _amountReceive: BigNumber;
+  _tokenSend: string;
+  _amountSend: BigNumber;
+  _creator: string;
+  _timestamp: BigNumber;
+}
+export type NewTradeEvent = TypedEvent<
+  [BigNumber, string, string, BigNumber, string, BigNumber, string, BigNumber],
+  NewTradeEventObject
+>;
+
+export type NewTradeEventFilter = TypedEventFilter<NewTradeEvent>;
 
 export interface WithdrawEventObject {
   _token: string;
@@ -230,7 +266,17 @@ export interface Exchange extends BaseContract {
 
     fee(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    fillOrder(
+      _id: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     idToCancelledStatus(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
+    idToCompletedStatus(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
@@ -273,7 +319,17 @@ export interface Exchange extends BaseContract {
 
   fee(overrides?: CallOverrides): Promise<BigNumber>;
 
+  fillOrder(
+    _id: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   idToCancelledStatus(
+    arg0: PromiseOrValue<BigNumberish>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
+  idToCompletedStatus(
     arg0: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<boolean>;
@@ -316,7 +372,17 @@ export interface Exchange extends BaseContract {
 
     fee(overrides?: CallOverrides): Promise<BigNumber>;
 
+    fillOrder(
+      _id: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     idToCancelledStatus(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
+    idToCompletedStatus(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<boolean>;
@@ -390,6 +456,27 @@ export interface Exchange extends BaseContract {
       _ts?: null
     ): NewOrderEventFilter;
 
+    "NewTrade(uint256,address,address,uint256,address,uint256,address,uint256)"(
+      _id?: null,
+      _initiator?: null,
+      _tokenReceive?: null,
+      _amountReceive?: null,
+      _tokenSend?: null,
+      _amountSend?: null,
+      _creator?: null,
+      _timestamp?: null
+    ): NewTradeEventFilter;
+    NewTrade(
+      _id?: null,
+      _initiator?: null,
+      _tokenReceive?: null,
+      _amountReceive?: null,
+      _tokenSend?: null,
+      _amountSend?: null,
+      _creator?: null,
+      _timestamp?: null
+    ): NewTradeEventFilter;
+
     "Withdraw(address,address,uint256,uint256)"(
       _token?: null,
       _user?: null,
@@ -426,7 +513,17 @@ export interface Exchange extends BaseContract {
 
     fee(overrides?: CallOverrides): Promise<BigNumber>;
 
+    fillOrder(
+      _id: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     idToCancelledStatus(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    idToCompletedStatus(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -470,7 +567,17 @@ export interface Exchange extends BaseContract {
 
     fee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    fillOrder(
+      _id: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
     idToCancelledStatus(
+      arg0: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    idToCompletedStatus(
       arg0: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

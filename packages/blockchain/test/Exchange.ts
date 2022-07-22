@@ -1,6 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers"
 import { expect } from "chai"
 import { ContractReceipt, ContractTransaction } from "ethers"
+import { Result } from "ethers/lib/utils"
 import { ethers } from "hardhat"
 import { describe } from "mocha"
 import { EXCHANGE, GCC_TOKEN, GWC_TOKEN } from "../constants"
@@ -215,7 +216,7 @@ describe("Exchange", () => {
     describe("Order actions", async () => {
         let result: ContractReceipt
         let transaction: ContractTransaction
-        const amount = parseToken(1, DECIMALS)
+        const amount = parseToken(5, DECIMALS)
 
         beforeEach(async () => {
             transaction = await token_1
@@ -226,6 +227,21 @@ describe("Exchange", () => {
             transaction = await exchange
                 .connect(user_1)
                 .deposit(token_1.address, amount)
+            result = await transaction.wait()
+
+            transaction = await token_2
+                .connect(deployer)
+                .transfer(user_2.address, parseToken(5, DECIMALS))
+            result = await transaction.wait()
+
+            transaction = await token_2
+                .connect(user_2)
+                .approve(exchange.address, parseToken(2, DECIMALS))
+            result = await transaction.wait()
+
+            transaction = await exchange
+                .connect(user_2)
+                .deposit(token_2.address, parseToken(2, DECIMALS))
             result = await transaction.wait()
 
             transaction = await exchange
@@ -295,6 +311,91 @@ describe("Exchange", () => {
                     ).to.be.revertedWithCustomError(
                         exchange,
                         "Exchange__Unauthorized_Cancel"
+                    )
+                })
+            })
+        })
+        describe("Filling Order", async () => {
+            let result: ContractReceipt
+            beforeEach(async () => {
+                const transaction = await exchange.connect(user_2).fillOrder(1)
+                result = await transaction.wait()
+            })
+            describe("Success", async () => {
+                beforeEach(async () => {
+                    null
+                })
+
+                it("Should Transfer fund and take fee", async () => {
+                    expect(
+                        await exchange.balanceOf(
+                            token_1.address,
+                            user_1.address
+                        )
+                    ).to.equal(0)
+                    expect(
+                        await exchange.balanceOf(
+                            token_1.address,
+                            user_2.address
+                        )
+                    ).to.equal(parseToken(1, DECIMALS))
+                    expect(
+                        await exchange.balanceOf(
+                            token_1.address,
+                            exchange.address
+                        )
+                    ).to.equal(0)
+                    expect(
+                        await exchange.balanceOf(
+                            token_2.address,
+                            user_1.address
+                        )
+                    ).to.equal(parseToken(1, DECIMALS))
+                    expect(
+                        await exchange.balanceOf(
+                            token_2.address,
+                            user_2.address
+                        )
+                    ).to.equal(parseToken(0.9, DECIMALS))
+                    expect(
+                        await exchange.balanceOf(
+                            token_2.address,
+                            exchange.address
+                        )
+                    ).to.equal(parseToken(0.1, DECIMALS))
+                })
+                it("emits an  event", async () => {
+                    const event = result!.events![0]
+
+                    expect(event.event).to.equal("NewTrade")
+
+                    const args = event!.args as Result
+                    expect(args._id).to.equal(1)
+                    expect(args._initiator).to.equal(user_2.address)
+                    expect(args._tokenReceive).to.equal(token_2.address)
+                    expect(args._amountReceive).to.equal(amount)
+                    expect(args._tokenSend).to.equal(token_1.address)
+                    expect(args._amountSend).to.equal(amount)
+                    expect(args._creator).to.equal(user_1.address)
+                })
+            })
+
+            describe("Failure", async () => {
+                it("rejects orders with invalid id", async () => {
+                    await expect(
+                        exchange.connect(user_2).fillOrder(11111)
+                    ).to.be.revertedWithCustomError(
+                        exchange,
+                        "Exchange__Order_Doesnt_Exist"
+                    )
+                })
+
+                it("rejects already filled orders", async () => {
+                    await expect(
+                        exchange.connect(user_2).fillOrder(1)
+                    ).to.be.revertedWithCustomError(
+                        exchange,
+                        "Exchange__Order_Cant_Be_Completed"
                     )
                 })
             })
