@@ -16,3 +16,9 @@ export const GWC_TOKEN: IToken = {
     DECIMALS: 12,
     TOTAL_SUPPLY: 1000,
 }
+export const GNC_TOKEN: IToken = {
+    NAME: "Giga Normic Coin",
+    SYMBOL: "GNC",
+    DECIMALS: 12,
+    TOTAL_SUPPLY: 2000,
+}

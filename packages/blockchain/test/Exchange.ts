@@ -216,7 +216,7 @@ describe("Exchange", () => {
     describe("Order actions", async () => {
         let result: ContractReceipt
         let transaction: ContractTransaction
-        const amount = parseToken(5, DECIMALS)
+        const amount = parseToken(1, DECIMALS)
 
         beforeEach(async () => {
             transaction = await token_1
@@ -332,7 +332,7 @@ describe("Exchange", () => {
                             token_1.address,
                             user_1.address
                         )
-                    ).to.equal(0)
+                    ).to.equal(parseToken(0, DECIMALS))
                     expect(
                         await exchange.balanceOf(
                             token_1.address,
@@ -342,9 +342,9 @@ describe("Exchange", () => {
                     expect(
                         await exchange.balanceOf(
                             token_1.address,
-                            exchange.address
+                            exchangeAccount.address
                         )
-                    ).to.equal(0)
+                    ).to.equal(parseToken(0, DECIMALS))
                     expect(
                         await exchange.balanceOf(
                             token_2.address,
@@ -360,7 +360,7 @@ describe("Exchange", () => {
                     expect(
                         await exchange.balanceOf(
                             token_2.address,
-                            exchange.address
+                            exchangeAccount.address
                         )
                     ).to.equal(parseToken(0.1, DECIMALS))
                 })
