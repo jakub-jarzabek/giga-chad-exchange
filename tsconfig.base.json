@@ -10,7 +10,7 @@
         "module": "esnext",
         "moduleResolution": "node",
         "paths": {
-            "@giga-chad-exchange/constants": ["packages/constants/src/index.ts"]
+            "@blockchain/*": ["packages/blockchain/*"]
         },
         "rootDir": ".",
         "skipDefaultLibCheck": true,

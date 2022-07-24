@@ -9,8 +9,8 @@ async function main() {
     const gcc = await Token.deploy(
         GCC_TOKEN.NAME,
         GCC_TOKEN.SYMBOL,
-        GCC_TOKEN.TOTAL_SUPPLY,
-        GCC_TOKEN.DECIMALS
+        GCC_TOKEN.DECIMALS,
+        GCC_TOKEN.TOTAL_SUPPLY
     )
     await gcc.deployed()
     console.log(`GCC Deployed to: ${gcc.address}`)
@@ -18,8 +18,8 @@ async function main() {
     const gnc = await Token.deploy(
         GNC_TOKEN.NAME,
         GNC_TOKEN.SYMBOL,
-        GNC_TOKEN.TOTAL_SUPPLY,
-        GNC_TOKEN.DECIMALS
+        GNC_TOKEN.DECIMALS,
+        GNC_TOKEN.TOTAL_SUPPLY
     )
     await gnc.deployed()
     console.log(`GNC Deployed to: ${gnc.address}`)
@@ -27,8 +27,8 @@ async function main() {
     const gwc = await Token.deploy(
         GWC_TOKEN.NAME,
         GWC_TOKEN.SYMBOL,
-        GWC_TOKEN.TOTAL_SUPPLY,
-        GWC_TOKEN.DECIMALS
+        GWC_TOKEN.DECIMALS,
+        GWC_TOKEN.TOTAL_SUPPLY
     )
     await gwc.deployed()
     console.log(`GWC Deployed to: ${gwc.address}`)
