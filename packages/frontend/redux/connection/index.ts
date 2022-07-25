@@ -2,7 +2,7 @@ import { Web3Provider } from "@ethersproject/providers"
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
 import { ethers } from "ethers"
 
-interface IProviderSlice {
+export interface IProviderSlice {
     provider: null | Web3Provider
     network: null | number
     account: null | string

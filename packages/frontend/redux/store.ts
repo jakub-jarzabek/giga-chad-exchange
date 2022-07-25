@@ -11,7 +11,8 @@ export const store = configureStore({
         token: tokenReducer,
     },
     devTools: true,
-    middleware: [thunkMiddleware],
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware().concat(thunkMiddleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>

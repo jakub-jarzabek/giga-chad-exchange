@@ -3,34 +3,27 @@ import React, { useEffect, useContext } from "react"
 import { ethers } from "ethers"
 import { Web3Context } from "./_app"
 import Token from "@blockchain/artifacts/contracts/Token.sol/Token.json"
-import { Provider } from "../redux"
+import { Connection } from "../redux"
 import { useDispatch, useSelector } from "react-redux"
-import { RootState } from "../redux"
+import { RootState, IProviderSlice, AppDispatch } from "../redux"
 import { Web3Provider } from "@ethersproject/providers"
-
-const loadBlockChain = async () => {
-    const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-    })
-}
-
 export function Index() {
-    const dispatch = useDispatch()
+    const dispatch = useDispatch<AppDispatch>()
     useEffect(() => {
-        dispatch(Provider.setProvider())
-        dispatch(Provider.setNetwork("aaa"))
+        dispatch(Connection.setProvider())
+        dispatch(Connection.setNetwork())
+        dispatch(Connection.setAccounts())
     }, [])
-    const { provider } = useSelector<RootState, { provider: Web3Provider }>(
-        (store) => store.provider
-    )
+    const { provider, account, network } = useSelector<
+        RootState,
+        IProviderSlice
+    >((store) => store.connection)
     useEffect(() => {
-        loadBlockChain()
         const token = new ethers.Contract(
             "0x5FbDB2315678afecb367f032d93F642f64180aa3",
             Token.abi,
             provider
         )
-        console.log(token.address)
     }, [provider])
     return <div className="text-green-300">app</div>
 }
