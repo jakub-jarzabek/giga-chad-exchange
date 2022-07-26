@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit"
 import connectionReducer from "./connection"
-import tokenReducer from "./token"
+import tokenReducer from "./tokens"
 import exchangeReducer from "./exchange"
 import thunkMiddleware from "redux-thunk"
 
@@ -12,7 +12,9 @@ export const store = configureStore({
     },
     devTools: true,
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(thunkMiddleware),
+        getDefaultMiddleware({ serializableCheck: false }).concat(
+            thunkMiddleware
+        ),
 })
 
 export type RootState = ReturnType<typeof store.getState>

@@ -6,6 +6,7 @@ export interface IProviderSlice {
     provider: null | Web3Provider
     network: null | number
     account: null | string
+    balance: null | string
 }
 // Async Thunks
 const setNetwork = createAsyncThunk(
@@ -21,11 +22,15 @@ const setNetwork = createAsyncThunk(
 const setAccounts = createAsyncThunk(
     "payload/setAccounts",
     async (arg, thunkAPI) => {
+        const state = thunkAPI.getState() as { connection: IProviderSlice }
         const accounts = await window.ethereum.request({
             method: "eth_requestAccounts",
         })
         const account = ethers.utils.getAddress(accounts[0])
-        return account
+        const balance = ethers.utils.formatEther(
+            await state.connection.provider.getBalance(account)
+        )
+        return { account, balance }
     }
 )
 
@@ -34,9 +39,10 @@ const initialState = {
     provider: null,
     network: null,
     account: null,
+    balance: null,
 }
 const providerSlice = createSlice({
-    name: "provider",
+    name: "connection",
     initialState,
     reducers: {
         setProvider(state) {
@@ -53,7 +59,8 @@ const providerSlice = createSlice({
             state.network = action.payload
         })
         builder.addCase(setAccounts.fulfilled, (state, action) => {
-            state.account = action.payload
+            state.account = action.payload.account
+            state.balance = action.payload.balance
         })
     },
 })

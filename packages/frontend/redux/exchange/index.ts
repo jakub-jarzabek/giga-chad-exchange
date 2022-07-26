@@ -1,13 +1,34 @@
-import { createSlice } from "@reduxjs/toolkit"
-import type { PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"
+import { IProviderSlice } from "../connection"
+import { ethers } from "ethers"
+import EXCHANGE from "@blockchain/artifacts/contracts/Exchange.sol/Exchange.json"
 
-const initialState = {}
+const setExchange = createAsyncThunk(
+    "payload/setExchange",
+    async (address: string, thunkAPI) => {
+        const state = thunkAPI.getState() as { connection: IProviderSlice }
+        const exchange = new ethers.Contract(
+            address,
+            EXCHANGE.abi,
+            state.connection.provider
+        )
+        return exchange
+    }
+)
+const initialState = {
+    loaded: false,
+    exchange: {},
+}
 const exchangeSlice = createSlice({
     name: "exchange",
     initialState,
     reducers: {},
+    extraReducers: (builder) => {
+        builder.addCase(setExchange.fulfilled, (state, action) => {
+            state.loaded = true
+            state.exchange = action.payload
+        })
+    },
 })
-
-// const {} = exchangeSlice.actions
-export const Exchange = {}
+export const Exchange = { setExchange }
 export default exchangeSlice.reducer

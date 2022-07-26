@@ -1,31 +1,44 @@
-import styles from "./index.module.css"
 import React, { useEffect, useContext } from "react"
-import { ethers } from "ethers"
-import { Web3Context } from "./_app"
-import Token from "@blockchain/artifacts/contracts/Token.sol/Token.json"
-import { Connection } from "../redux"
+import { Connection, Exchange, Tokens } from "../redux"
 import { useDispatch, useSelector } from "react-redux"
 import { RootState, IProviderSlice, AppDispatch } from "../redux"
-import { Web3Provider } from "@ethersproject/providers"
+import Addresses from "@blockchain/deployed/data.json"
+import { Navbar, TraidingPairSelector } from "../components"
 export function Index() {
     const dispatch = useDispatch<AppDispatch>()
     useEffect(() => {
         dispatch(Connection.setProvider())
         dispatch(Connection.setNetwork())
         dispatch(Connection.setAccounts())
+        dispatch(Tokens.setToken(Addresses.gcc))
+        dispatch(Tokens.setToken(Addresses.gwc))
+        dispatch(Tokens.setToken(Addresses.gnc))
+        dispatch(Exchange.setExchange(Addresses.exchage))
+        window.ethereum.on("accountsChanged", () => {
+            dispatch(Connection.setProvider())
+            dispatch(Connection.setNetwork())
+            dispatch(Connection.setAccounts())
+        })
+        window.ethereum.on("chainChanged", () => {
+            window.location.reload()
+        })
     }, [])
     const { provider, account, network } = useSelector<
         RootState,
         IProviderSlice
     >((store) => store.connection)
-    useEffect(() => {
-        const token = new ethers.Contract(
-            "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-            Token.abi,
-            provider
-        )
-    }, [provider])
-    return <div className="text-green-300">app</div>
+
+    return (
+        <div className="flex flex-col">
+            <Navbar onTabChange={(e) => null} />
+            <div className="w-full h-40 flex flex-row">
+                <div className="w-1/4 h-full flex-col bg-slate-700 drop-shadow-lg">
+                    <TraidingPairSelector />
+                </div>
+                <div className="w-3/4 h-full flex-col bg-slate-500"></div>
+            </div>
+        </div>
+    )
 }
 
 export default Index
