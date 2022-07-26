@@ -25,7 +25,15 @@ const initialState = {
 const tokenSlice = createSlice({
     name: "tokens",
     initialState,
-    reducers: {},
+    reducers: {
+        removeTokens(state) {
+            if (typeof window !== "undefined") {
+                state.tokens = []
+            }
+            state.symbols = []
+            state.loaded = false
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(setToken.fulfilled, (state, action) => {
             console.log(action.payload)
@@ -35,5 +43,6 @@ const tokenSlice = createSlice({
         })
     },
 })
-export const Tokens = { setToken }
+const { removeTokens } = tokenSlice.actions
+export const Tokens = { setToken, removeTokens }
 export default tokenSlice.reducer

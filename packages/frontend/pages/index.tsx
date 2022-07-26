@@ -10,9 +10,8 @@ export function Index() {
         dispatch(Connection.setProvider())
         dispatch(Connection.setNetwork())
         dispatch(Connection.setAccounts())
-        dispatch(Tokens.setToken(Addresses.gcc))
-        dispatch(Tokens.setToken(Addresses.gwc))
-        dispatch(Tokens.setToken(Addresses.gnc))
+        dispatch(Tokens.setToken(Addresses[31337].gcc))
+        dispatch(Tokens.setToken(Addresses[31337].gwc))
         dispatch(Exchange.setExchange(Addresses.exchage))
         window.ethereum.on("accountsChanged", () => {
             dispatch(Connection.setProvider())
