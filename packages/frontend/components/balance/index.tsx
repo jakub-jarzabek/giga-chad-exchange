@@ -26,20 +26,38 @@ export const Balance = () => {
     const [firstAmount, setFirstAmount] = useState("")
     const [secondAmount, setSecondAmount] = useState("")
     const handleDepositFirstToken = async () => {
-        dispatch(
-            Tokens.transferTokens({
-                amount: Number(firstAmount),
-                token: tokens[0],
-            })
-        )
+        if (tab == 1) {
+            dispatch(
+                Tokens.transferTokens({
+                    amount: Number(firstAmount),
+                    token: tokens[0],
+                })
+            )
+        } else {
+            dispatch(
+                Tokens.withdrawTokens({
+                    amount: Number(firstAmount),
+                    token: tokens[0],
+                })
+            )
+        }
     }
     const handleDepositSecondToken = async () => {
-        dispatch(
-            Tokens.transferTokens({
-                amount: Number(secondAmount),
-                token: tokens[1],
-            })
-        )
+        if (tab == 1) {
+            dispatch(
+                Tokens.transferTokens({
+                    amount: Number(secondAmount),
+                    token: tokens[1],
+                })
+            )
+        } else {
+            dispatch(
+                Tokens.withdrawTokens({
+                    amount: Number(firstAmount),
+                    token: tokens[1],
+                })
+            )
+        }
     }
 
     const [tab, setTab] = useState(1)

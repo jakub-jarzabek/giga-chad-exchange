@@ -73,6 +73,25 @@ const transferTokens = createAsyncThunk(
         return {}
     }
 )
+const withdrawTokens = createAsyncThunk(
+    "payload/withdraw",
+    async ({ amount, token }: ITransfer, thunkAPI) => {
+        const state = thunkAPI.getState() as IReduxState
+
+        state.token.loaded = false
+        const signer = state.connection.provider.getSigner()
+        const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18)
+
+        let transaction
+        transaction = await state.exchange.exchange
+            .connect(signer)
+            .withdraw(token.address, parsedAmount)
+        await transaction.wait()
+
+        state.token.loaded = true
+        return {}
+    }
+)
 const transferSuccess = createAsyncThunk(
     "payload/transferTokens",
     async (event, thunkAPI) => {
@@ -153,5 +172,6 @@ export const Tokens = {
     loadBalances,
     loadExchangeBalances,
     transferTokens,
+    withdrawTokens,
 }
 export default tokenSlice.reducer
