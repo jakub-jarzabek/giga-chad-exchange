@@ -27,6 +27,7 @@ export const Balance = () => {
     const [secondAmount, setSecondAmount] = useState("")
     const handleDepositFirstToken = async () => {
         if (tab == 1) {
+            console.log("xd")
             dispatch(
                 Tokens.transferTokens({
                     amount: Number(firstAmount),

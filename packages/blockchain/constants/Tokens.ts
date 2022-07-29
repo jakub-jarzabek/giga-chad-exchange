@@ -7,18 +7,18 @@ interface IToken {
 export const GCC_TOKEN: IToken = {
     NAME: "Giga Chad Coin",
     SYMBOL: "GCC",
-    DECIMALS: 12,
-    TOTAL_SUPPLY: 420,
+    DECIMALS: 18,
+    TOTAL_SUPPLY: 42000,
 }
 export const GWC_TOKEN: IToken = {
     NAME: "Giga Weeb Coin",
     SYMBOL: "GWC",
-    DECIMALS: 12,
-    TOTAL_SUPPLY: 1000,
+    DECIMALS: 18,
+    TOTAL_SUPPLY: 100000,
 }
 export const GNC_TOKEN: IToken = {
     NAME: "Giga Normic Coin",
     SYMBOL: "GNC",
-    DECIMALS: 12,
-    TOTAL_SUPPLY: 2000,
+    DECIMALS: 18,
+    TOTAL_SUPPLY: 200000,
 }

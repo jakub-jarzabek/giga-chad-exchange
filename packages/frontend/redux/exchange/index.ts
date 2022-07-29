@@ -15,9 +15,22 @@ const setExchange = createAsyncThunk(
         return exchange
     }
 )
+const getOrders = createAsyncThunk(
+    "payload/setExchange",
+    async (address: string, thunkAPI) => {
+        const state = thunkAPI.getState() as { connection: IProviderSlice }
+        const exchange = new ethers.Contract(
+            address,
+            EXCHANGE.abi,
+            state.connection.provider
+        )
+        return exchange
+    }
+)
 const initialState = {
     loaded: false,
     exchange: {},
+    orders: [],
 }
 const exchangeSlice = createSlice({
     name: "exchange",

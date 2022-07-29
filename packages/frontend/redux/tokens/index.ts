@@ -54,22 +54,26 @@ const transferTokens = createAsyncThunk(
     async ({ amount, token }: ITransfer, thunkAPI) => {
         const state = thunkAPI.getState() as IReduxState
 
-        state.token.loaded = false
-        const signer = state.connection.provider.getSigner()
-        const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18)
+        // state.token.loaded = false
 
-        let transaction
-        transaction = await token
-            .connect(signer)
-            .approve(state.exchange.exchange.address, parsedAmount)
+        try {
+            const signer = state.connection.provider.getSigner()
+            const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18)
+            let transaction
+            transaction = await token
+                .connect(signer)
+                .approve(state.exchange.exchange.address, parsedAmount)
 
-        await transaction.wait()
-        transaction = await state.exchange.exchange
-            .connect(signer)
-            .deposit(token.address, parsedAmount)
-        await transaction.wait()
+            await transaction.wait()
+            transaction = await state.exchange.exchange
+                .connect(signer)
+                .deposit(token.address, parsedAmount)
+            await transaction.wait()
 
-        state.token.loaded = true
+            // state.token.loaded = true
+        } catch (err) {
+            console.log(err)
+        }
         return {}
     }
 )
@@ -78,7 +82,6 @@ const withdrawTokens = createAsyncThunk(
     async ({ amount, token }: ITransfer, thunkAPI) => {
         const state = thunkAPI.getState() as IReduxState
 
-        state.token.loaded = false
         const signer = state.connection.provider.getSigner()
         const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18)
 
@@ -88,15 +91,71 @@ const withdrawTokens = createAsyncThunk(
             .withdraw(token.address, parsedAmount)
         await transaction.wait()
 
-        state.token.loaded = true
         return {}
     }
 )
-const transferSuccess = createAsyncThunk(
-    "payload/transferTokens",
-    async (event, thunkAPI) => {
+interface IPlaceOrder {
+    amount: number
+    price: number
+    tokens: ethers.Contract[]
+    type: "B" | "S"
+}
+const placeOrder = createAsyncThunk(
+    "payload/placeOrder",
+    async ({ amount, price, tokens, type }: IPlaceOrder, thunkAPI) => {
         const state = thunkAPI.getState() as IReduxState
 
+        const signer = state.connection.provider.getSigner()
+
+        if (type === "B") {
+            try {
+                const parsedReceive = ethers.utils.parseUnits(
+                    amount.toString(),
+                    18
+                )
+                const parsedSend = ethers.utils.parseUnits(
+                    (amount * price).toString(),
+                    18
+                )
+
+                let transaction
+                transaction = await state.exchange.exchange
+                    .connect(signer)
+                    .placeOrder(
+                        tokens[0].address,
+                        parsedReceive,
+                        tokens[1].address,
+                        parsedSend
+                    )
+                await transaction.wait()
+            } catch (err) {
+                console.log(err)
+            }
+        } else {
+            try {
+                const parsedSend = ethers.utils.parseUnits(
+                    amount.toString(),
+                    18
+                )
+                const parsedReceive = ethers.utils.parseUnits(
+                    (amount * price).toString(),
+                    18
+                )
+
+                let transaction
+                transaction = await state.exchange.exchange
+                    .connect(signer)
+                    .placeOrder(
+                        tokens[1].address,
+                        parsedReceive,
+                        tokens[0].address,
+                        parsedSend
+                    )
+                await transaction.wait()
+            } catch (err) {
+                console.log(err)
+            }
+        }
         return {}
     }
 )
@@ -126,13 +185,15 @@ const loadExchangeBalances = createAsyncThunk(
 )
 export interface ITokens {
     loaded: boolean
-    tokens: any[]
+    orderLoading: boolean
+    tokens: ethers.Contract[] | any
     symbols: string[]
     balance: string[]
     exchangeBalance: string[]
 }
 const initialState: ITokens = {
     loaded: false,
+    orderLoading: false,
     tokens: [],
     symbols: [],
     balance: [],
@@ -163,6 +224,27 @@ const tokenSlice = createSlice({
         builder.addCase(loadExchangeBalances.fulfilled, (state, action) => {
             state.exchangeBalance = action.payload.balance
         })
+        builder.addCase(transferTokens.pending, (state, action) => {
+            state.loaded = false
+        })
+
+        builder.addCase(transferTokens.fulfilled, (state, action) => {
+            state.loaded = true
+        })
+        builder.addCase(withdrawTokens.pending, (state, action) => {
+            state.loaded = false
+        })
+
+        builder.addCase(withdrawTokens.fulfilled, (state, action) => {
+            state.loaded = true
+        })
+        builder.addCase(placeOrder.pending, (state, action) => {
+            state.orderLoading = true
+        })
+
+        builder.addCase(placeOrder.fulfilled, (state, action) => {
+            state.orderLoading = false
+        })
     },
 })
 const { removeTokens } = tokenSlice.actions
@@ -173,5 +255,6 @@ export const Tokens = {
     loadExchangeBalances,
     transferTokens,
     withdrawTokens,
+    placeOrder,
 }
 export default tokenSlice.reducer

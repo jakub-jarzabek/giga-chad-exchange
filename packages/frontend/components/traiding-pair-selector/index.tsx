@@ -35,7 +35,7 @@ export const TraidingPairSelector = () => {
                         onChange={handleTraidingPairChange}
                         options={[
                             {
-                                id: `${addresses[network].gcc},${addresses[network].gcc}`,
+                                id: `${addresses[network].gcc},${addresses[network].gwc}`,
                                 label: "GCC/GWC",
                             },
                             {

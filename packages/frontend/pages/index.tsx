@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { RootState, IProviderSlice, AppDispatch } from "../redux"
 import Addresses from "@blockchain/deployed/data.json"
 import { Balance, Navbar, TraidingPairSelector } from "../components"
+import { Order } from "../components/order"
 export function Index() {
     const dispatch = useDispatch<AppDispatch>()
     useEffect(() => {
@@ -12,7 +13,7 @@ export function Index() {
         dispatch(Connection.setAccounts())
         dispatch(Tokens.setToken(Addresses[31337].gcc))
         dispatch(Tokens.setToken(Addresses[31337].gwc))
-        dispatch(Exchange.setExchange(Addresses[31337].exchage))
+        dispatch(Exchange.setExchange(Addresses[31337].exchange))
         window.ethereum.on("accountsChanged", () => {
             dispatch(Connection.setProvider())
             dispatch(Connection.setNetwork())
@@ -34,6 +35,7 @@ export function Index() {
                 <div className="w-1/4 h-full flex-col bg-slate-700 drop-shadow-lg">
                     <TraidingPairSelector />
                     <Balance />
+                    <Order />
                 </div>
                 <div className="w-3/4 h-full flex-col bg-slate-500"></div>
             </div>
