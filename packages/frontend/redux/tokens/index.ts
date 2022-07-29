@@ -5,7 +5,7 @@ import { ethers } from "ethers"
 import TOKEN from "@blockchain/artifacts/contracts/Token.sol/Token.json"
 import { TransactionDescription } from "@ethersproject/abi"
 
-interface IReduxState {
+export interface IReduxState {
     connection: IProviderSlice
     token: ITokens
     exchange: { exchange: ethers.Contract }
@@ -159,6 +159,7 @@ const placeOrder = createAsyncThunk(
         return {}
     }
 )
+
 const loadExchangeBalances = createAsyncThunk(
     "payload/loadExchangeBalances",
     async (args, thunkAPI) => {
