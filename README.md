@@ -8,7 +8,7 @@
 # Giga Chad Exchange
 
 Project that showcase implementation of exchange for ERC-20 Tokens.
-
+![Preview](/Preview.png?raw=true "Preview")
 ## Getting started
 
 1. Clone repo
