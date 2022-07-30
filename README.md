@@ -1,94 +1,106 @@
+- [Giga Chad Exchange](#giga-chad-exchange)
+  - [Getting started](#getting-started)
+  - [Available Tokens](#available-tokens)
+    - [Extending available coins](#extending-available-coins)
+  - [Contracts](#contracts)
+  - [Project structure](#project-structure)
 
+# Giga Chad Exchange
 
-# GigaChadExchange
+Project that showcase implementation of exchange for ERC-20 Tokens.
 
-This project was generated using [Nx](https://nx.dev).
+## Getting started
 
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="450"></p>
+1. Clone repo
+    ```
+    https://github.com/jakub-jarzabek/giga-chad-exchange
+    ```
+2. Install dependencies
+    ```
+    cd giga-chad-exchange && yarn
+    ```
+3. Run local node
 
-🔎 **Smart, Fast and Extensible Build System**
+    ```
+    npx nx run blockchain:start-node
+    ```
 
-## Adding capabilities to your workspace
+4. Deploy contracts to local node
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+    ```
+    npx nx run blockchain:deploy
+    ```
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+5. (Optional) Populate example data (e.g. to make available orders visible)
 
-Below are our core plugins:
+    ```
+    npx nx run blockchain:populate-data
+    ```
 
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
+6. Start frontend
 
-There are also many [community plugins](https://nx.dev/community) you could add.
+    ```
+    npx nx run frontend:serve
+    ```
 
-## Generate an application
+## Available Tokens
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+Out of box there are 3 available coins to trande
 
-> You can use any of the plugins above to generate applications as well.
+1. Giga Chad Coin (GCC) - main token that serves as main cryptocurrencty wrapper for deployed blockchain (e.g. wrapped ETH for ethereum)
+2. Giga Weeb Coin (GWC) - side token, GCC can be traded to acquire
+3. Giga Normic Coin (GNC) -side token, GCC can be traded to acquire
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+### Extending available coins
 
-## Generate a library
+To extend available coins with custom one follow steps:
 
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
+1. In `blockchain/constants/Token.ts` add configuration for new token that maches interface:
 
-> You can also use any of the plugins above to generate libraries as well.
+    ```typescript
+    interface IToken {
+        NAME: string
+        SYMBOL: string
+        DECIMALS: number
+        TOTAL_SUPPLY: number
+    }
+    ```
 
-Libraries are shareable across libraries and applications. They can be imported from `@giga-chad-exchange/mylib`.
+2. In `blockchain/scripts/1_deploy.ts` add deployment script for new token
 
-## Development server
+    ```typescript
+    const <TOKEN> = await Token.deploy(
+        GCC_TOKEN.NAME,
+        GCC_TOKEN.SYMBOL,
+        GCC_TOKEN.DECIMALS,
+        GCC_TOKEN.TOTAL_SUPPLY
+    )
+    await <TOKEN>.deployed()
+    obj[chainId].<TOKEN> = <TOKEN>.address
+    ```
 
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
+3. Run deploy script again your token address will be saved in `blockchain/deployed/data.json` file and can be accessed in frontend by:
 
-## Code scaffolding
+    ```typescript
+    import data from '@blockchain/deployed/data.json`
+    ```
 
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
+4. Adjust frontend to allow operations on new token
 
-## Build
+## Contracts
 
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+1. Token.sol - Basic token cotract from scratch that mimic ERC-20 standard implementation
+2. Exchange.sol - Contract for allowing users to store tokens in exchange and trade them
 
-## Running unit tests
+## Project structure
 
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `nx e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev) to learn more.
-
-
-
-## ☁ Nx Cloud
-
-### Distributed Computation Caching & Distributed Task Execution
-
-<p style="text-align: center;"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-cloud-card.png"></p>
-
-Nx Cloud pairs with Nx in order to enable you to build and test code more rapidly, by up to 10 times. Even teams that are new to Nx can connect to Nx Cloud and start saving time instantly.
-
-Teams using Nx gain the advantage of building full-stack applications with their preferred framework alongside Nx’s advanced code generation and project dependency graph, plus a unified experience for both frontend and backend developers.
-
-Visit [Nx Cloud](https://nx.app/) to learn more.
+    ```
+    giga-chad-exchange/
+    ├─ tools/
+    │  ├─ <tools and executors for nx monorepo>
+    ├─ packages/
+    │  ├─ blockchain/
+    │  │  ├─ <hardhat project>
+    │  ├─ frontend/
+    │  │  ├─ <next js frontend>
+    ```
