@@ -1,9 +1,26 @@
 {
-  "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/blockchain/src",
-  "projectType": "application",
-  "targets": {
-    
-  },
-  "tags": []
+    "$schema": "../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "packages/blockchain/src",
+    "projectType": "application",
+    "targets": {
+        "start-node": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "cd packages/blockchain && npx hardhat node"
+            }
+        },
+        "deploy": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "cd packages/blockchain && npx hardhat run scripts/1_deploy.ts --network localhost"
+            }
+        },
+        "populate-data": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "cd packages/blockchain && npx hardhat run scripts/2_populateData.ts --network localhost"
+            }
+        }
+    },
+    "tags": []
 }
