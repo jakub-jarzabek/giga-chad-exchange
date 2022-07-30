@@ -3,6 +3,7 @@ import { TabList, Tab, Button, Input } from "@web3uikit/core"
 import { useSelector } from "react-redux"
 import {
     AppDispatch,
+    IOrder,
     IProviderSlice,
     ITokens,
     RootState,
@@ -19,7 +20,7 @@ export const Balance = () => {
     const { account } = useSelector<RootState, IProviderSlice>(
         (state) => state.connection
     )
-    const { exchange } = useSelector<RootState, { exchange: any }>(
+    const { orders } = useSelector<RootState, { orders: IOrder[] }>(
         (state) => state.exchange
     )
 
@@ -27,7 +28,6 @@ export const Balance = () => {
     const [secondAmount, setSecondAmount] = useState("")
     const handleDepositFirstToken = async () => {
         if (tab == 1) {
-            console.log("xd")
             dispatch(
                 Tokens.transferTokens({
                     amount: Number(firstAmount),
@@ -66,7 +66,7 @@ export const Balance = () => {
     useEffect(() => {
         dispatch(Tokens.loadBalances())
         dispatch(Tokens.loadExchangeBalances())
-    }, [tokens, account, loaded])
+    }, [tokens, account, loaded, orders])
     return (
         <div className="flex flex-col p-4">
             <div className="flex flex-row justify-between">

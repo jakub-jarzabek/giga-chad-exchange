@@ -25,6 +25,16 @@ export interface IOrder {
     amountSend: BigNumber
     ts: string
 }
+export interface ITrade {
+    id: string
+    initiator: string
+    tokenReceive: string
+    tokenSend: string
+    amountReceive: BigNumber
+    amountSend: BigNumber
+    ts: string
+    creator: string
+}
 
 const fillOrder = createAsyncThunk(
     "payload/fillOrder",
@@ -44,10 +54,32 @@ const fillOrder = createAsyncThunk(
         return { order }
     }
 )
+const cancelOrder = createAsyncThunk(
+    "payload/cancelOrder",
+    async (order: IOrder, thunkAPI) => {
+        console.log("dxxxx")
+        const state = thunkAPI.getState() as IReduxState
+
+        const signer = state.connection.provider.getSigner()
+
+        let transaction
+        try {
+            transaction = await state.exchange.exchange
+                .connect(signer)
+                .cancelOrder(order.id)
+            await transaction.wait()
+        } catch (err) {
+            console.log(err)
+        }
+
+        return { order }
+    }
+)
 const initialState = {
     loaded: false,
     exchange: {},
     orders: [] as IOrder[],
+    trades: [] as ITrade[],
 }
 const exchangeSlice = createSlice({
     name: "exchange",
@@ -55,6 +87,9 @@ const exchangeSlice = createSlice({
     reducers: {
         appendOrder: (state, action: PayloadAction<IOrder>) => {
             state.orders = [...state.orders, action.payload]
+        },
+        appendTrade: (state, action: PayloadAction<ITrade>) => {
+            state.trades = [...state.trades, action.payload]
         },
     },
     extraReducers: (builder) => {
@@ -69,6 +104,12 @@ const exchangeSlice = createSlice({
         })
     },
 })
-const { appendOrder } = exchangeSlice.actions
-export const Exchange = { setExchange, appendOrder, fillOrder }
+const { appendOrder, appendTrade } = exchangeSlice.actions
+export const Exchange = {
+    setExchange,
+    appendOrder,
+    fillOrder,
+    cancelOrder,
+    appendTrade,
+}
 export default exchangeSlice.reducer

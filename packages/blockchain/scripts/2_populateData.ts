@@ -8,6 +8,7 @@ const wait = (seconds: number) => {
 }
 
 async function main() {
+    console.log("running...")
     const accounts = await ethers.getSigners()
     const network = await ethers.provider.getNetwork()
     const chainId = network.chainId as 69 | 31337
@@ -26,9 +27,6 @@ async function main() {
 
     let transaction, result
     transaction = await gwc.connect(sender).transfer(receiver.address, amount)
-    console.log(
-        `Transferred ${amount} parseToken from ${sender.address} to ${receiver.address}\n`
-    )
 
     const user1 = accounts[0]
     const user2 = accounts[1]
@@ -136,6 +134,7 @@ async function main() {
 
         await wait(1)
     }
+    console.log("done")
 }
 
 main()
